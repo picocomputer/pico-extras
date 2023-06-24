@@ -1338,18 +1338,20 @@ bool scanvideo_setup_with_timing(const scanvideo_mode_t *mode, const scanvideo_t
     sem_init(&vblank_begin, 0, 1);
 
     for (int i = 0; i < PICO_SCANVIDEO_SCANLINE_BUFFER_COUNT; i++) {
-        mem_buffer_t b;
-        pico_buffer_alloc_in_place(&b, PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS * sizeof(uint32_t));
-        scanline_buffers[i].core.data = (uint32_t *)b.bytes;// calloc(PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS, sizeof(uint32_t));
-        scanline_buffers[i].core.data_max = PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS;
+        if (!scanline_buffers[i].core.data) {
+            mem_buffer_t b;
+            pico_buffer_alloc_in_place(&b, PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS * sizeof(uint32_t));
+            scanline_buffers[i].core.data = (uint32_t *)b.bytes;// calloc(PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS, sizeof(uint32_t));
+            scanline_buffers[i].core.data_max = PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS;
 #if PICO_SCANVIDEO_PLANE_COUNT > 1
-        scanline_buffers[i].core.data2 = (uint32_t *) calloc(PICO_SCANVIDEO_MAX_SCANLINE_BUFFER2_WORDS, sizeof(uint32_t));
-        scanline_buffers[i].core.data2_max = PICO_SCANVIDEO_MAX_SCANLINE_BUFFER2_WORDS;
+            scanline_buffers[i].core.data2 = (uint32_t *) calloc(PICO_SCANVIDEO_MAX_SCANLINE_BUFFER2_WORDS, sizeof(uint32_t));
+            scanline_buffers[i].core.data2_max = PICO_SCANVIDEO_MAX_SCANLINE_BUFFER2_WORDS;
 #if PICO_SCANVIDEO_PLANE_COUNT > 2
-        scanline_buffers[i].core.data3 = (uint32_t *) calloc(PICO_SCANVIDEO_MAX_SCANLINE_BUFFER3_WORDS, sizeof(uint32_t));
-        scanline_buffers[i].core.data3_max = PICO_SCANVIDEO_MAX_SCANLINE_BUFFER3_WORDS;
+            scanline_buffers[i].core.data3 = (uint32_t *) calloc(PICO_SCANVIDEO_MAX_SCANLINE_BUFFER3_WORDS, sizeof(uint32_t));
+            scanline_buffers[i].core.data3_max = PICO_SCANVIDEO_MAX_SCANLINE_BUFFER3_WORDS;
 #endif
 #endif
+        }
         scanline_buffers[i].next = i != PICO_SCANVIDEO_SCANLINE_BUFFER_COUNT - 1 ? &scanline_buffers[i + 1] : NULL;
     }
 
