@@ -1017,7 +1017,7 @@ static inline bool is_scanline_sm(int sm) {
 
 void setup_sm(int sm, uint offset) {
 #ifndef NDEBUG
-    printf("Setting up SM %d\n", sm);
+    // printf("Setting up SM %d\n", sm);
 #endif
 
     pio_sm_config config = is_scanline_sm(sm) ? video_mode.pio_program->configure_pio(video_pio, sm, offset) :
